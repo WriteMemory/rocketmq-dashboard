@@ -113,7 +113,8 @@ app.factory('abc', function ($http, $window) {
                     $http({
                          method: "GET",
                          url: "login/check.query"
-                     }).success(function (resp) {
+                     }).then(function (response) {
+                         var resp = response.data;
                          if (resp.status == 0) {
                              alert(resp.data)
                          }
@@ -145,8 +146,12 @@ app.provider('getDictName', function () {
     }
 })
 
-app.config(['$routeProvider', '$httpProvider','$cookiesProvider','getDictNameProvider','$sceProvider','$translateProvider','$mdThemingProvider',
-    function ($routeProvider, $httpProvider ,$cookiesProvider,getDictNameProvider,$sceProvider,$translateProvider,$mdThemingProvider) {
+app.config(['$routeProvider', '$httpProvider','$cookiesProvider','getDictNameProvider','$sceProvider','$translateProvider','$mdThemingProvider','$locationProvider','$qProvider',
+    function ($routeProvider, $httpProvider ,$cookiesProvider,getDictNameProvider,$sceProvider,$translateProvider,$mdThemingProvider,$locationProvider,$qProvider) {
+        //AngularJS 1.6+ 默认 hashPrefix 为 '!'，保持原有的 #/xxx 路由格式
+        $locationProvider.hashPrefix('');
+        //AngularJS 1.6+ 默认会对未处理的 promise rejection 报错，保持原有行为
+        $qProvider.errorOnUnhandledRejections(false);
         //关闭html校验，存在安全隐患，但目前没问题，使用ng-bind-html需要注意，防止跨站攻击
         $sceProvider.enabled(false);
         //前端字典项目初始化
@@ -165,7 +170,8 @@ app.config(['$routeProvider', '$httpProvider','$cookiesProvider','getDictNamePro
             cache:false,
             timeout : 5000, //超时时间设置，单位毫秒
             converters:{
-                "text json": JSONbig.parse
+                //丢弃 __proto__/constructor 等可疑键，防止原型污染且不影响整个响应解析
+                "text json": JSONbig({protoAction: 'ignore', constructorAction: 'ignore'}).parse
             }
         });
 
@@ -209,7 +215,8 @@ app.config(['$routeProvider', '$httpProvider','$cookiesProvider','getDictNamePro
         $translateProvider.translations('zh',zh);
         $translateProvider.preferredLanguage('en');
         $translateProvider.useCookieStorage();
-//        $translateProvider.useSanitizeValueStrategy('sanitize');
+        //转义翻译参数，防止通过插值参数注入 HTML
+        $translateProvider.useSanitizeValueStrategy('escapeParameters');
 
     }]);
 

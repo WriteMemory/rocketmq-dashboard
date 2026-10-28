@@ -31,7 +31,8 @@ module.controller('messageController', ['$scope', 'ngDialog', '$http', 'Notifica
         params: {
             skipSysProcess: true
         }
-    }).success(function (resp) {
+    }).then(function (response) {
+        var resp = response.data;
         if (resp.status == 0) {
             $scope.allTopicList = resp.data.topicList.sort();
             console.log($scope.allTopicList);
@@ -76,7 +77,8 @@ module.controller('messageController', ['$scope', 'ngDialog', '$http', 'Notifica
                 pageSize: $scope.paginationConf.itemsPerPage,
                 taskId: $scope.taskId
             }
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status === 0) {
                 console.log(resp);
                 $scope.messageShowList = resp.data.page.content;
@@ -110,7 +112,8 @@ module.controller('messageController', ['$scope', 'ngDialog', '$http', 'Notifica
                 end: $scope.timepickerEnd.valueOf()
 
             }
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(resp);
                 $scope.queryMessageByTopicResult = resp.data;
@@ -133,7 +136,8 @@ module.controller('messageController', ['$scope', 'ngDialog', '$http', 'Notifica
                 topic: $scope.selectedTopic,
                 key: $scope.key
             }
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(resp);
                 $scope.queryMessageByTopicAndKeyResult = resp.data;
@@ -153,7 +157,8 @@ module.controller('messageController', ['$scope', 'ngDialog', '$http', 'Notifica
                 port: storeHost.port,
                 offset: commitLogOffset
             }
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(resp);
                 ngDialog.open({
@@ -175,7 +180,8 @@ module.controller('messageController', ['$scope', 'ngDialog', '$http', 'Notifica
                 msgId: messageId,
                 topic: topic
             }
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(resp);
                 ngDialog.open({
@@ -229,7 +235,8 @@ module.controller('messageDetailViewDialogController', ['$scope', 'ngDialog', '$
                     consumerGroup: consumerGroup,
                     topic: topic
                 }
-            }).success(function (resp) {
+            }).then(function (response) {
+                var resp = response.data;
                 if (resp.status == 0) {
                     ngDialog.open({
                         template: 'operationResultDialog',

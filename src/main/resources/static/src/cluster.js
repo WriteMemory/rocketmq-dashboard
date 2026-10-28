@@ -60,7 +60,8 @@ app.controller('clusterController', ['$scope','$location','$http','Notification'
             method: "GET",
             url: "cluster/brokerConfig.query",
             params:{brokerAddr:brokerAddr}
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 $scope.brokerConfig = resp.data;
                 $(".configModal").modal();

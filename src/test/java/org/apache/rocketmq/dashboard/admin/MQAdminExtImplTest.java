@@ -175,12 +175,6 @@ public class MQAdminExtImplTest {
     }
 
     @Test
-    public void testExamineBrokerClusterAclConfig() throws Exception {
-        assertNotNull(mqAdminExtImpl);
-        assertNull(mqAdminExtImpl.examineBrokerClusterAclConfig(brokerAddr));
-    }
-
-    @Test
     public void testQueryConsumerStatus() throws Exception {
         assertNotNull(mqAdminExtImpl);
     }
@@ -408,9 +402,9 @@ public class MQAdminExtImplTest {
     public void testDeleteTopicInNameServer() throws Exception {
         assertNotNull(mqAdminExtImpl);
         {
-            doNothing().when(defaultMQAdminExt).deleteTopicInNameServer(any(), anyString());
+            doNothing().when(defaultMQAdminExt).deleteTopicInNameServer(any(), any(), anyString());
         }
-        mqAdminExtImpl.deleteTopicInNameServer(Sets.newHashSet("127.0.0.1:9876", "127.0.0.2:9876"), "topic_test");
+        mqAdminExtImpl.deleteTopicInNameServer(Sets.newHashSet("127.0.0.1:9876", "127.0.0.2:9876"), "DefaultCluster", "topic_test");
     }
 
     @Test
@@ -759,12 +753,12 @@ public class MQAdminExtImplTest {
     }
 
     @Test
-    public void testGetAllTopicGroup() throws Exception {
+    public void testGetAllTopicConfig() throws Exception {
         assertNotNull(mqAdminExtImpl);
         {
-            when(defaultMQAdminExt.getAllTopicGroup(anyString(), anyLong())).thenReturn(new TopicConfigSerializeWrapper());
+            when(defaultMQAdminExt.getAllTopicConfig(anyString(), anyLong())).thenReturn(new TopicConfigSerializeWrapper());
         }
-        TopicConfigSerializeWrapper wrapper = mqAdminExtImpl.getAllTopicGroup(brokerAddr, 5000L);
+        TopicConfigSerializeWrapper wrapper = mqAdminExtImpl.getAllTopicConfig(brokerAddr, 5000L);
         Assert.assertNotNull(wrapper);
     }
 

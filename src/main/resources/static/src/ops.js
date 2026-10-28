@@ -24,7 +24,8 @@ app.controller('opsController', ['$scope', '$location', '$http', 'Notification',
     $http({
         method: "GET",
         url: "ops/homePage.query"
-    }).success(function (resp) {
+    }).then(function (response) {
+        var resp = response.data;
         if (resp.status == 0) {
             $scope.namesvrAddrList = resp.data.namesvrAddrList.join(";");
             $scope.useVIPChannel = resp.data.useVIPChannel;
@@ -39,7 +40,8 @@ app.controller('opsController', ['$scope', '$location', '$http', 'Notification',
             method: "POST",
             url: "ops/updateNameSvrAddr.do",
             params: {nameSvrAddrList: $scope.namesvrAddrList}
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 Notification.info({message: "SUCCESS", delay: 2000});
             } else {
@@ -52,7 +54,8 @@ app.controller('opsController', ['$scope', '$location', '$http', 'Notification',
             method: "POST",
             url: "ops/updateIsVIPChannel.do",
             params: {useVIPChannel: $scope.useVIPChannel}
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 Notification.info({message: "SUCCESS", delay: 2000});
             } else {
@@ -65,7 +68,8 @@ app.controller('opsController', ['$scope', '$location', '$http', 'Notification',
             method: "POST",
             url: "ops/updateUseTLS.do",
             params: {useTLS: $scope.useTLS}
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 Notification.info({message: "SUCCESS", delay: 2000});
             } else {

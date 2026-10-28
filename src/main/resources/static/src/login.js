@@ -30,7 +30,8 @@ app.controller('loginController', ['$scope', '$location', '$http', 'Notification
             method: "POST",
             url: "login/login.do",
             params: {username: $("#username").val(), password: $("#password").val()}
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 Notification.info({message: 'Login successful, redirect now', delay: 2000});
                 $window.sessionStorage.setItem("username", resp.data.loginUserName);

@@ -74,7 +74,8 @@ module.controller('consumerController', ['$scope', 'ngDialog', '$http', 'Notific
         $http({
             method: "GET",
             url: "consumer/groupList.query"
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 $scope.allConsumerGrouopList = resp.data;
                 console.log($scope.allConsumerGrouopList);
@@ -93,7 +94,8 @@ module.controller('consumerController', ['$scope', 'ngDialog', '$http', 'Notific
             method: "GET",
             url: "monitor/consumerMonitorConfigByGroupName.query",
             params: {consumeGroupName: consumerGroupName}
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             // if(resp.status ==0){
             ngDialog.open({
                 template: 'consumerMonitorDialog',
@@ -177,7 +179,8 @@ module.controller('consumerController', ['$scope', 'ngDialog', '$http', 'Notific
         $http({
             method: "GET",
             url: "cluster/list.query"
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(resp);
                 ngDialog.open({
@@ -205,7 +208,8 @@ module.controller('consumerController', ['$scope', 'ngDialog', '$http', 'Notific
             method: "GET",
             url: "consumer/queryTopicByConsumer.query",
             params: {consumerGroup: consumerGroupName}
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(resp);
                 ngDialog.open({
@@ -224,7 +228,8 @@ module.controller('consumerController', ['$scope', 'ngDialog', '$http', 'Notific
             method: "GET",
             url: "consumer/consumerConnection.query",
             params: {consumerGroup: consumerGroupName}
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(resp);
                 ngDialog.open({
@@ -242,7 +247,8 @@ module.controller('consumerController', ['$scope', 'ngDialog', '$http', 'Notific
             method: "GET",
             url: "consumer/examineSubscriptionGroupConfig.query",
             params: {consumerGroup: consumerGroupName}
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(resp);
                 $scope.openCreateOrUpdateDialog(resp.data);
@@ -260,7 +266,8 @@ module.controller('consumerController', ['$scope', 'ngDialog', '$http', 'Notific
             params: {
                 consumerGroup: consumerGroupName
             }
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(resp);
 
@@ -294,7 +301,8 @@ module.controller('consumerMonitorDialogController', function ($scope, ngDialog,
                     minCount: $scope.ngDialogData.data.minCount,
                     maxDiffTotal: $scope.ngDialogData.data.maxDiffTotal
                 }
-            }).success(function (resp) {
+            }).then(function (response) {
+                var resp = response.data;
                 if (resp.status == 0) {
                     Notification.info({message: "update success!", delay: 2000});
                 } else {
@@ -320,7 +328,8 @@ module.controller('deleteConsumerDialogController', ['$scope', 'ngDialog', '$htt
                     groupName: $scope.ngDialogData.consumerGroupName,
                     brokerNameList: $scope.selectedBrokerNameList
                 }
-            }).success(function (resp) {
+            }).then(function (response) {
+                var resp = response.data;
                 if (resp.status == 0) {
                     Notification.info({message: "delete success!", delay: 2000});
                     ngDialog.close(this);
@@ -340,7 +349,8 @@ module.controller('consumerModifyDialogController', ['$scope', 'ngDialog', '$htt
                 method: "POST",
                 url: "consumer/createOrUpdate.do",
                 data: request
-            }).success(function (resp) {
+            }).then(function (response) {
+                var resp = response.data;
                 if (resp.status == 0) {
                     Notification.info({message: "update success!", delay: 2000});
                     ngDialog.close(this);
@@ -362,7 +372,8 @@ module.controller('consumerTopicViewDialogController', ['$scope', 'ngDialog', '$
                     clientId: clientId,
                     jstack: jstack
                 }
-            }).success(function (resp) {
+            }).then(function (response) {
+                var resp = response.data;
                 if (resp.status == 0) {
                     ngDialog.open({
                         template: 'consumerClientDialog',

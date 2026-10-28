@@ -23,7 +23,7 @@ module.directive('ngConfirmClick', [
             link: function (scope, element, attr) {
                 var msg = attr.ngConfirmClick || "Are you sure?";
                 var clickAction = attr.confirmedClick;
-                element.bind('click', function (event) {
+                element.on('click', function (event) {
                     if (window.confirm(msg)) {
                         scope.$eval(clickAction)
                     }
@@ -57,7 +57,8 @@ module.controller('topicController', ['$scope', 'ngDialog', '$http', 'Notificati
         $http({
             method: "GET",
             url: "topic/list.query"
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 $scope.allTopicList = resp.data.topicList.sort();
                 console.log($scope.allTopicList);
@@ -154,7 +155,8 @@ module.controller('topicController', ['$scope', 'ngDialog', '$http', 'Notificati
             params: {
                 topic: topic
             }
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 Notification.info({message: "delete success!", delay: 2000});
                 $scope.refreshTopicList();
@@ -168,7 +170,8 @@ module.controller('topicController', ['$scope', 'ngDialog', '$http', 'Notificati
             method: "GET",
             url: "topic/stats.query",
             params: {topic: topic}
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(JSON.stringify(resp));
                 ngDialog.open({
@@ -189,7 +192,8 @@ module.controller('topicController', ['$scope', 'ngDialog', '$http', 'Notificati
             method: "GET",
             url: "topic/route.query",
             params: {topic: topic}
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(JSON.stringify(resp));
                 ngDialog.open({
@@ -213,7 +217,8 @@ module.controller('topicController', ['$scope', 'ngDialog', '$http', 'Notificati
             method: "GET",
             url: "topic/queryConsumerByTopic.query",
             params: {topic: topic}
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(JSON.stringify(resp));
                 ngDialog.open({
@@ -248,7 +253,8 @@ module.controller('topicController', ['$scope', 'ngDialog', '$http', 'Notificati
             params: {
                 topic: topic
             }
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 if (resp.data.groupList == null) {
                     Notification.error({message: "don't have consume group!", delay: 2000});
@@ -277,7 +283,8 @@ module.controller('topicController', ['$scope', 'ngDialog', '$http', 'Notificati
             params: {
                 topic: topic
             }
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 if (resp.data.groupList == null) {
                     Notification.error({message: "don't have consume group!", delay: 2000});
@@ -315,7 +322,8 @@ module.controller('topicController', ['$scope', 'ngDialog', '$http', 'Notificati
             params: {
                 topic: topic
             }
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 $scope.openCreateOrUpdateDialog(resp.data, sysFlag);
             } else {
@@ -340,7 +348,8 @@ module.controller('topicController', ['$scope', 'ngDialog', '$http', 'Notificati
         $http({
             method: "GET",
             url: "cluster/list.query"
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(resp);
                 ngDialog.open({
@@ -378,7 +387,8 @@ module.controller('topicModifyDialogController', ['$scope', 'ngDialog', '$http',
                 method: "POST",
                 url: "topic/createOrUpdate.do",
                 data: request
-            }).success(function (resp) {
+            }).then(function (response) {
+                var resp = response.data;
                 if (resp.status == 0) {
                     Notification.info({message: "success!", delay: 2000});
                     ngDialog.close(this);
@@ -406,7 +416,8 @@ module.controller('consumerResetOffsetDialogController', ['$scope', 'ngDialog', 
                     topic: $scope.ngDialogData.topic,
                     force: true
                 }
-            }).success(function (resp) {
+            }).then(function (response) {
+                var resp = response.data;
                 if (resp.status == 0) {
                     ngDialog.open({
                         template: 'resetOffsetResultDialog',
@@ -435,7 +446,8 @@ module.controller('skipMessageAccumulateDialogController', ['$scope', 'ngDialog'
                     topic: $scope.ngDialogData.topic,
                     force: true
                 }
-            }).success(function (resp) {
+            }).then(function (response) {
+                var resp = response.data;
                 if (resp.status == 0) {
                     ngDialog.open({
                         template: 'resetOffsetResultDialog',
@@ -465,7 +477,8 @@ module.controller('sendTopicMessageDialogController', ['$scope', 'ngDialog', '$h
                 method: "POST",
                 url: "topic/sendTopicMessage.do",
                 data: $scope.sendTopicMessage
-            }).success(function (resp) {
+            }).then(function (response) {
+                var resp = response.data;
                 if (resp.status == 0) {
                     ngDialog.open({
                         template: 'sendResultDialog',
@@ -488,7 +501,8 @@ module.controller('routerViewDialogController', ['$scope', 'ngDialog', '$http', 
                 method: "POST",
                 url: "topic/deleteTopicByBroker.do",
                 params: {brokerName: broker.brokerName, topic: $scope.ngDialogData.topic}
-            }).success(function (resp) {
+            }).then(function (response) {
+                var resp = response.data;
                 if (resp.status == 0) {
                     Notification.info({message: "delete success", delay: 2000});
                 } else {

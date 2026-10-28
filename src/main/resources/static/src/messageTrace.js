@@ -45,7 +45,8 @@ module.controller('messageTraceController', ['$scope', '$routeParams', 'ngDialog
         params: {
             skipSysProcess: true
         }
-    }).success(function (resp) {
+    }).then(function (response) {
+        var resp = response.data;
         if (resp.status == 0) {
             $scope.allTopicList = resp.data.topicList.sort();
             console.log($scope.allTopicList)
@@ -76,7 +77,8 @@ module.controller('messageTraceController', ['$scope', '$routeParams', 'ngDialog
                 topic: $scope.selectedTopic,
                 key: $scope.key
             }
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(resp);
                 $scope.queryMessageByTopicAndKeyResult = resp.data;
@@ -95,7 +97,8 @@ module.controller('messageTraceController', ['$scope', '$routeParams', 'ngDialog
                 msgId: messageId,
                 topic: topic
             }
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(resp);
                 $scope.queryMessageByMessageIdResult = resp.data;
@@ -114,7 +117,8 @@ module.controller('messageTraceController', ['$scope', '$routeParams', 'ngDialog
                 msgId: messageId,
                 traceTopic: topic
             }
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if (resp.status == 0) {
                 console.log(resp);
                 ngDialog.open({
@@ -132,7 +136,7 @@ module.controller('messageTraceController', ['$scope', '$routeParams', 'ngDialog
 module.controller('messageTraceDetailViewDialogController', ['$scope', '$timeout', 'ngDialog', '$http', 'Notification', function ($scope, $timeout, ngDialog, $http, Notification) {
         $scope.displayMessageTraceGraph = function (messageTraceGraph) {
             let dom = document.getElementById("messageTraceGraph");
-            $scope.messageTraceGraph = echarts.init(dom);
+            $scope.messageTraceGraph = echarts.init(dom, 'v5');
             let option;
             let data = [];
             let dataZoomEnd = 100;

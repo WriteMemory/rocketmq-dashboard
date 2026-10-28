@@ -132,13 +132,12 @@ public class TopicServiceImpl extends AbstractCommonService implements TopicServ
 
     @Override
     public TopicConfig examineTopicConfig(String topic, String brokerName) {
-        ClusterInfo clusterInfo = null;
         try {
-            clusterInfo = mqAdminExt.examineBrokerClusterInfo();
+            ClusterInfo clusterInfo = mqAdminExt.examineBrokerClusterInfo();
+            return mqAdminExt.examineTopicConfig(clusterInfo.getBrokerAddrTable().get(brokerName).selectBrokerAddr(), topic);
         } catch (Exception e) {
             throw Throwables.propagate(e);
         }
-        return mqAdminExt.examineTopicConfig(clusterInfo.getBrokerAddrTable().get(brokerName).selectBrokerAddr(), topic);
     }
 
     @Override
@@ -168,7 +167,7 @@ public class TopicServiceImpl extends AbstractCommonService implements TopicServ
                 String[] ns = configure.getNamesrvAddr().split(";");
                 nameServerSet = new HashSet<String>(Arrays.asList(ns));
             }
-            mqAdminExt.deleteTopicInNameServer(nameServerSet, topic);
+            mqAdminExt.deleteTopicInNameServer(nameServerSet, clusterName, topic);
         } catch (Exception err) {
             throw Throwables.propagate(err);
         }

@@ -25,7 +25,8 @@ module.controller('producerController', ['$scope', '$http','Notification',functi
         params:{
             skipSysProcess: true
         }
-    }).success(function (resp) {
+    }).then(function (response) {
+        var resp = response.data;
         if(resp.status ==0){
             $scope.allTopicList = resp.data.topicList.sort();
             console.log($scope.allTopicList);
@@ -41,7 +42,8 @@ module.controller('producerController', ['$scope', '$http','Notification',functi
                 topic:$scope.selectedTopic,
                 producerGroup:$scope.producerGroup
             }
-        }).success(function (resp) {
+        }).then(function (response) {
+            var resp = response.data;
             if(resp.status ==0){
                 $scope.connectionList = resp.data.connectionSet;
             }else {

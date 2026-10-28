@@ -23,7 +23,8 @@ app.controller('AppCtrl', ['$scope','$window','$translate','$http','Notification
         $http({
                     method: "POST",
                     url: "login/logout.do"
-                }).success(function (resp) {
+                }).then(function (response) {
+                    var resp = response.data;
                    window.location = resp.data;
                    $window.sessionStorage.clear();
                 });
@@ -32,10 +33,10 @@ app.controller('AppCtrl', ['$scope','$window','$translate','$http','Notification
 
 app.controller('dashboardCtrl', ['$scope','$rootScope','$translate','$filter','Notification','remoteApi','tools', function ($scope,$rootScope,$translate,$filter,Notification,remoteApi,tools) {
 
-    $scope.barChart = echarts.init(document.getElementById('main'));
-    $scope.lineChart = echarts.init(document.getElementById('line'));
-    $scope.topicBarChart = echarts.init(document.getElementById('topicBar'));
-    $scope.topicLineChart = echarts.init(document.getElementById('topicLine'));
+    $scope.barChart = echarts.init(document.getElementById('main'), 'v5');
+    $scope.lineChart = echarts.init(document.getElementById('line'), 'v5');
+    $scope.topicBarChart = echarts.init(document.getElementById('topicBar'), 'v5');
+    $scope.topicLineChart = echarts.init(document.getElementById('topicLine'), 'v5');
     $scope.timepickerOptions ={format: 'YYYY-MM-DD', showClear: true};
     $scope.topicNames = [];
 

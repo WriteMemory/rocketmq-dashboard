@@ -1,19 +1,35 @@
 /**
  * angular-chosen-localytics - Angular Chosen directive is an AngularJS Directive that brings the Chosen jQuery in a Angular way
- * @version v1.5.0
+ * @version v1.9.2
  * @link http://github.com/leocaseiro/angular-chosen
  * @license MIT
  */
 (function() {
-  var indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+  var chosenModule,
+    indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
   angular.module('localytics.directives', []);
 
-  angular.module('localytics.directives').directive('chosen', [
-    '$timeout', function($timeout) {
+  chosenModule = angular.module('localytics.directives');
+
+  chosenModule.provider('chosen', function() {
+    var options;
+    options = {};
+    return {
+      setOption: function(newOpts) {
+        angular.extend(options, newOpts);
+      },
+      $get: function() {
+        return options;
+      }
+    };
+  });
+
+  chosenModule.directive('chosen', [
+    'chosen', '$timeout', '$parse', function(config, $timeout, $parse) {
       var CHOSEN_OPTION_WHITELIST, NG_OPTIONS_REGEXP, isEmpty, snakeCase;
       NG_OPTIONS_REGEXP = /^\s*([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+group\s+by\s+([\s\S]+?))?\s+for\s+(?:([\$\w][\$\w]*)|(?:\(\s*([\$\w][\$\w]*)\s*,\s*([\$\w][\$\w]*)\s*\)))\s+in\s+([\s\S]+?)(?:\s+track\s+by\s+([\s\S]+?))?$/;
-      CHOSEN_OPTION_WHITELIST = ['persistentCreateOption', 'createOptionText', 'createOption', 'skipNoResults', 'noResultsText', 'allowSingleDeselect', 'disableSearchThreshold', 'disableSearch', 'enableSplitWordSearch', 'inheritSelectClasses', 'maxSelectedOptions', 'placeholderTextMultiple', 'placeholderTextSingle', 'searchContains', 'singleBackstrokeDelete', 'displayDisabledOptions', 'displaySelectedOptions', 'width', 'includeGroupLabelInSelected', 'maxShownResults'];
+      CHOSEN_OPTION_WHITELIST = ['allowSingleDeselect', 'disableSearch', 'disableSearchThreshold', 'enableSplitWordSearch', 'inheritSelectClasses', 'maxSelectedOptions', 'noResultsText', 'placeholderTextMultiple', 'placeholderTextSingle', 'searchContains', 'groupSearch', 'singleBackstrokeDelete', 'width', 'displayDisabledOptions', 'displaySelectedOptions', 'includeGroupLabelInSelected', 'maxShownResults', 'caseSensitiveSearch', 'hideResultsOnSelect', 'rtl'];
       snakeCase = function(input) {
         return input.replace(/[A-Z]/g, function($1) {
           return "_" + ($1.toLowerCase());
@@ -34,21 +50,28 @@
       };
       return {
         restrict: 'A',
-        require: '?ngModel',
+        require: ['select', '?ngModel'],
         priority: 1,
-        link: function(scope, element, attr, ngModel) {
-          var chosen, empty, initOrUpdate, match, options, origRender, startLoading, stopLoading, updateMessage, valuesExpr, viewWatch;
+        link: function(scope, element, attr, ctrls) {
+          var $render, chosen, directiveOptions, disableIfEmpty, empty, initIfNotInitialized, match, ngModel, ngSelect, options, startLoading, stopLoading, timer, trackBy, valuesExpr, viewWatch;
           scope.disabledValuesHistory = scope.disabledValuesHistory ? scope.disabledValuesHistory : [];
           element = $(element);
           element.addClass('localytics-chosen');
-          options = scope.$eval(attr.chosen) || {};
+          ngSelect = ctrls[0];
+          ngModel = ctrls[1];
+          match = attr.ngOptions && attr.ngOptions.match(NG_OPTIONS_REGEXP);
+          valuesExpr = match && $parse(match[7]);
+          trackBy = match && match[8];
+          directiveOptions = scope.$eval(attr.chosen) || {};
+          options = angular.copy(config);
+          angular.extend(options, directiveOptions);
           angular.forEach(attr, function(value, key) {
             if (indexOf.call(CHOSEN_OPTION_WHITELIST, key) >= 0) {
               return attr.$observe(key, function(value) {
                 var prefix;
                 prefix = String(element.attr(attr.$attr[key])).slice(0, 2);
                 options[snakeCase(key)] = prefix === '{{' ? value : scope.$eval(value);
-                return updateMessage();
+                return disableIfEmpty();
               });
             }
           });
@@ -66,39 +89,41 @@
           };
           chosen = null;
           empty = false;
-          initOrUpdate = function() {
-            var defaultText, dropListDom;
-            if (chosen) {
-              dropListDom = $(element.parent()).find("div.chosen-drop");
-              if (dropListDom && dropListDom.length > 0 && dropListDom.css("left").indexOf("0") >= 0) {
-                return;
-              }
-              return element.trigger('chosen:updated');
-            } else {
-              scope.$evalAsync(function() {
-                chosen = element.chosen(options).data('chosen');
+          initIfNotInitialized = function() {
+            if (!chosen) {
+              return scope.$evalAsync(function() {
+                if (!chosen) {
+                  return chosen = element.chosen(options).data('chosen');
+                }
               });
-              if (angular.isObject(chosen)) {
-                return defaultText = chosen.default_text;
-              }
             }
           };
-          updateMessage = function() {
+          disableIfEmpty = function() {
             if (chosen && empty) {
-              element.attr('data-placeholder', chosen.results_none_found).attr('disabled', true);
-            } else {
-              element.removeAttr('data-placeholder');
+              element.attr('disabled', true);
             }
             return element.trigger('chosen:updated');
           };
           if (ngModel) {
-            origRender = ngModel.$render;
+            $render = ngModel.$render;
             ngModel.$render = function() {
-              origRender();
-              return initOrUpdate();
+              var isPrimitive, nextValue, previousValue, valueChanged;
+              initIfNotInitialized();
+              try {
+                previousValue = ngSelect.readValue();
+              } catch (error) {}
+              $render();
+              try {
+                nextValue = ngSelect.readValue();
+              } catch (error) {}
+              isPrimitive = !trackBy && !attr.multiple;
+              valueChanged = isPrimitive ? previousValue !== nextValue : !angular.equals(previousValue, nextValue);
+              if (valueChanged) {
+                return element.trigger('chosen:updated');
+              }
             };
             element.on('chosen:hiding_dropdown', function() {
-              return scope.$apply(function() {
+              return scope.$applyAsync(function() {
                 return ngModel.$setTouched();
               });
             });
@@ -109,28 +134,26 @@
               scope.$watch(viewWatch, ngModel.$render, true);
             }
           } else {
-            initOrUpdate();
+            initIfNotInitialized();
           }
           attr.$observe('disabled', function() {
             return element.trigger('chosen:updated');
           });
           if (attr.ngOptions && ngModel) {
-            match = attr.ngOptions.match(NG_OPTIONS_REGEXP);
-            valuesExpr = match[7];
+            timer = null;
             scope.$watchCollection(valuesExpr, function(newVal, oldVal) {
-              var timer;
               return timer = $timeout(function() {
                 if (angular.isUndefined(newVal)) {
                   return startLoading();
                 } else {
                   empty = isEmpty(newVal);
                   stopLoading();
-                  return updateMessage();
+                  return disableIfEmpty();
                 }
               });
             });
             return scope.$on('$destroy', function(event) {
-              if (typeof timer !== "undefined" && timer !== null) {
+              if (timer != null) {
                 return $timeout.cancel(timer);
               }
             });

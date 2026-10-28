@@ -19,14 +19,18 @@ app.service('remoteApi', ['$http','tools', function ($http,tools) {
         $http({
             method: "GET",
             url: "topic/list.query"
-        }).success(callback);
+        }).then(function (response) {
+            callback(response.data);
+        });
     }
 
     var queryClusterList = function(callback){
         $http({
             method: "GET",
             url: "cluster/list.query"
-        }).success(callback);
+        }).then(function (response) {
+            callback(response.data);
+        });
     }
 
     var queryBrokerHisData = function(date,callback){

@@ -282,7 +282,7 @@ public class TopicControllerTest extends BaseControllerTest {
             ClusterInfo clusterInfo = MockObjectUtil.createClusterInfo();
             when(mqAdminExt.examineBrokerClusterInfo()).thenReturn(clusterInfo);
             doNothing().when(mqAdminExt).deleteTopicInBroker(any(), anyString());
-            doNothing().when(mqAdminExt).deleteTopicInNameServer(any(), anyString());
+            doNothing().when(mqAdminExt).deleteTopicInNameServer(any(), any(), anyString());
         }
 
         // 1、clusterName is blank
